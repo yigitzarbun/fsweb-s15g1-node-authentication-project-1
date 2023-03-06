@@ -21,11 +21,33 @@ server.use(helmet());
 server.use(express.json());
 server.use(cors());
 
+const usersRouter = require("./users/users-router");
+const authRouter = require("./auth/auth-router");
+
+const session = require("express-session");
+
+server.use("/api/users", usersRouter);
+server.use("/api/auth", authRouter);
+
+server.use(
+  session({
+    name: "cikolatacips",
+    secret: "nobody tosses a dwarf!",
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      secure: false,
+    },
+    httpOnly: false,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 server.get("/", (req, res) => {
   res.json({ api: "up" });
 });
 
-server.use((err, req, res, next) => { // eslint-disable-line
+server.use((err, req, res, next) => {
+  // eslint-disable-line
   res.status(err.status || 500).json({
     message: err.message,
     stack: err.stack,
