@@ -31,7 +31,6 @@ const bcrypt = require("bcryptjs");
 router.post(
   "/register",
   authMd.usernameBostami,
-  authMd.usernameVarmi,
   authMd.sifreGecerlimi,
   async (req, res, next) => {
     try {

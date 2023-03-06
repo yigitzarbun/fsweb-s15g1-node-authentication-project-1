@@ -44,8 +44,8 @@ async function usernameBostami(req, res, next) {
 */
 async function usernameVarmi(req, res, next) {
   const { username } = req.body;
-
-  if (!username) {
+  const presentUser = await usersModel.goreBul({ username }).first();
+  if (!presentUser) {
     res.status(401).json({ message: "Geçersiz kriter" });
   } else {
     next();
