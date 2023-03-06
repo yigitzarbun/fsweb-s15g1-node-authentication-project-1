@@ -9,7 +9,7 @@ const usersModel = require("../users/users-model");
   }
 */
 function sinirli(req, res, next) {
-  if (req.session && req.session.user_id) {
+  if (req.session.user) {
     next();
   } else {
     res.status(401).json({ message: "Geçemezsiniz!" });
@@ -26,8 +26,8 @@ function sinirli(req, res, next) {
 */
 async function usernameBostami(req, res, next) {
   const { username } = req.body;
-  const userExists = await usersModel.goreBul(username);
-  if (userExists) {
+  const userExists = await usersModel.goreBul({ username });
+  if (userExists.length > 0) {
     res.status(422).json({ message: "Username kullaniliyor" });
   } else {
     next();
@@ -44,8 +44,8 @@ async function usernameBostami(req, res, next) {
 */
 async function usernameVarmi(req, res, next) {
   const { username } = req.body;
-  const userExists = await usersModel.goreBul(username);
-  if (!userExists) {
+
+  if (!username) {
     res.status(401).json({ message: "Geçersiz kriter" });
   } else {
     next();
@@ -62,7 +62,7 @@ async function usernameVarmi(req, res, next) {
 */
 function sifreGecerlimi(req, res, next) {
   const { password } = req.body;
-  if (!password || password.length > 3) {
+  if (!password || password.length < 3) {
     res.status(422).json({ message: "Şifre 3 karakterden fazla olmalı" });
   } else {
     next();

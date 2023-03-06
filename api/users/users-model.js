@@ -10,7 +10,7 @@ function bul() {
   verilen filtreye sahip tüm kullanıcıları içeren bir DİZİ ye çözümlenir
  */
 function goreBul(filtre) {
-  return db("users").where(filtre).first();
+  return db("users").where(filtre);
 }
 
 /**
@@ -24,7 +24,7 @@ function idyeGoreBul(user_id) {
   yeni eklenen kullanıcıya çözümlenir { user_id, username }
  */
 async function ekle(user) {
-  const newUserIdArray = await db("users").insert({ user });
+  const newUserIdArray = await db("users").insert(user);
   const newUserId = newUserIdArray[0];
   const newUser = await db("users").where("user_id", newUserId).first();
   return newUser;

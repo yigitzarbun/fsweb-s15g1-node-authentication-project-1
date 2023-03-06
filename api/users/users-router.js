@@ -4,11 +4,13 @@ const router = express.Router();
 const usersModel = require("./users-model");
 const authMd = require("./../auth/auth-middleware");
 
-router.get("/", authMd.sinirli, (req, res, next) => {
-  usersModel
-    .bul()
-    .then((users) => res.status(200).json(users))
-    .catch((err) => next(err));
+router.get("/", authMd.sinirli, async (req, res, next) => {
+  try {
+    const users = await usersModel.bul();
+    res.status(201).json(users);
+  } catch (err) {
+    next(err);
+  }
 });
 /**
   [GET] /api/users

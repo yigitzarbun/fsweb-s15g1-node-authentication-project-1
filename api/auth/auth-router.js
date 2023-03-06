@@ -31,17 +31,16 @@ const bcrypt = require("bcryptjs");
 router.post(
   "/register",
   authMd.usernameBostami,
+  authMd.usernameVarmi,
   authMd.sifreGecerlimi,
-  (req, res, next) => {
+  async (req, res, next) => {
     try {
       const credentials = req.body;
-      const hash = bcrypt.hashSync(credentials.password, 14);
+      const hash = bcrypt.hashSync(credentials.password, 8);
       credentials.password = hash;
-      usersModel
-        .ekle(credentials)
-        .then((user) => res.status(201).json(user))
-        .catch((err) => res.status(500).json({ message: "hata oluştu" }));
-    } catch (error) {
+      const registeredUser = await usersModel.ekle(credentials);
+      res.status(201).json(registeredUser);
+    } catch (err) {
       next(err);
     }
   }
@@ -69,20 +68,15 @@ router.post(
     try {
       const { username, password } = req.body;
       const presentUser = await usersModel.goreBul({ username }).first();
-      if (presentUser) {
-        const isPasswordTrue = bcrypt.compareSync(
-          password,
-          presentUser.password
-        );
-        if (isPasswordTrue) {
-          res.status(200).json({ message: `Hoşgeldin ${username}!` });
-        } else {
-          res.status(401).json({ message: "Geçersiz kriter!" });
-        }
+      const isPasswordTrue = bcrypt.compareSync(password, presentUser.password);
+
+      if (presentUser && isPasswordTrue) {
+        req.session.user = presentUser;
+        res.status(200).json({ message: `Hoş geldin ${username}!` });
       } else {
-        res.status(401).json({ message: "Bilgilerde hata var!" });
+        res.status(401).json({ message: "Geçersiz kriter!" });
       }
-    } catch (error) {
+    } catch (err) {
       next(err);
     }
   }
