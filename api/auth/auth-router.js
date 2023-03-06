@@ -109,7 +109,7 @@ router.get("/logout", (req, res, next) => {
         }
       });
     } else {
-      res.status(200).json({ message: "Oturun bulunamadı!" });
+      res.status(200).json({ message: "Oturum bulunamadı!" });
     }
   } catch (error) {
     next(err);
